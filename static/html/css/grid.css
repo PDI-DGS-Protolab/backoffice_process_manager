@@ -1,0 +1,52 @@
+/* Columns */
+.columns.one {
+  width: 8.3333333333%; }
+
+.columns.two {
+  width: 16.666666666%; }
+
+.columns.three, .one-quarter {
+  width: 25%; }
+
+.columns.four, .one-third {
+  width: 33.333333333%; }
+
+.columns.five {
+  width: 41.666666666%; }
+
+.columns.six, .one-half, .two-quarters {
+  width: 50%; }
+
+.columns.seven {
+  width: 58.333333333%; }
+
+.columns.eight, .two-thirds {
+  width: 66.666666666%; }
+
+.columns.nine, .three-quarters {
+  width: 75%; }
+
+.columns.ten {
+  width: 83.333333333%; }
+
+.columns.eleven {
+  width: 91.666666666%; }
+
+.columns.twelve, .total {
+  width: 100%; }
+
+/* Proportions */
+.one-fifth {
+  width: 20%; }
+
+.two-fifths {
+  width: 40%; }
+
+.three-fifths {
+  width: 60%; }
+
+.four-fifths {
+  width: 80%; }
+
+.one-half-pseudo {
+  width : 47.5%; }

@@ -29,22 +29,26 @@ from django.shortcuts import render
 from django.db        import transaction
 from django.http      import HttpResponse
 
-from services import start_order_to_cash, sync_first_order_to_cash, start_collections
+from services import start_order_to_cash, sync_first_order_to_cash, start_collections, get_processes_by_user, get_subprocesses_by_process, get_tasks_by_subprocess
+
 
 def index(request):
     return render(request, 'index.html', {})
 
+
 @transaction.commit_on_success
 def launchInvoicing(request):
     start_order_to_cash()
-    
+
     return render(request, 'processes/invoicing.html', {})
+
 
 @transaction.commit_on_success
 def launchSyncInvoice(request):
     sync_first_order_to_cash()
 
     return render(request, 'processes/invoicing.html', {})
+
 
 @transaction.commit_on_success
 def chargingCallback(request):
@@ -63,4 +67,19 @@ def chargingCallback(request):
         return HttpResponse('OK',  mimetype="application/json")
     else:
         return HttpResponse('ERROR',  mimetype="application/json", status=405)
-    
+
+
+@transaction.commit_on_success
+def get_processes(request, user_id):
+    processes = get_processes_by_user(user_id)
+    subprocesses = {}
+    tasks = {}
+    for process in processes:
+        subprocess = get_subprocesses_by_process(process)
+        subprocesses[process] = subprocess
+        for sub in subprocess:
+            tasks[sub] = get_tasks_by_subprocess(sub)
+    args = {"processes"   : processes,
+            "subprocesses": subprocesses,
+            "tasks"       : tasks}
+    render(request, 'processes/index.html', args)

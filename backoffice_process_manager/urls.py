@@ -36,5 +36,7 @@ urlpatterns = patterns('',
 
     url(r'^processes/chargingCallback/$',   'processes.views.chargingCallback'),
 
+    url(r'^processes/getinfo/(?P<user_id>\w+)$', 'processes.views.get_processes'),
+
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT, 'show_indexes':True}),
 )

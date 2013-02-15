@@ -1,0 +1,36 @@
+.block {
+  display: block; }
+
+.inline {
+  display: inline; }
+
+.ib, .center {
+  display: inline-block; }
+
+.hidden {
+  display: none; }
+
+.left {
+  float: left; }
+
+.right {
+  float: right; }
+
+.auto {
+  margin: auto; }
+
+.text-center, .center {
+  text-align: center; }
+
+.clearfix {
+  zoom: 1;
+  /* For IE 6/7 (trigger hasLayout) */ }
+  .clearfix:before, .clearfix:after {
+    content: "\0020";
+    display: block;
+    height: 0;
+    overflow: hidden; }
+  .clearfix:after {
+    clear: both; }
+
+.clear { clear : both; }
