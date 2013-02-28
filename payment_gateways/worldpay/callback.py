@@ -15,15 +15,6 @@ class WorldpayCallbackController:
     @classmethod
     @transaction.commit_on_success
     def success(cls, request):
-        params = request.GET.get
-
-        order = params('orderKey')
-        order_id = order.split("^")
-
-        charger = cls.getCharger()
-
-        charger.update_order_status(order_id[2], "VALIDATED")
-
         return render(request, 'payment_gateways/success.html', {})
 
     @classmethod
@@ -34,13 +25,4 @@ class WorldpayCallbackController:
     @classmethod
     @transaction.commit_on_success
     def error(cls, request):
-        params = request.GET.get
-
-        order = params('orderKey')
-        order_id = order.split("^")
-
-        charger = cls.getCharger()
-
-        charger.update_order_status(order_id[2], "ERROR")
-
         return render(request, 'payment_gateways/error.html', {})

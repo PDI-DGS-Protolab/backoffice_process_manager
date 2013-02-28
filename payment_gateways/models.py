@@ -66,6 +66,7 @@ class MasterInformation(models.Model):
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
     
     subprocess = models.ForeignKey(SubProcess, null=True)
+    contract = models.CharField(max_length = 20)
 
 class Order(models.Model):
 

@@ -50,15 +50,15 @@ def parse_sdr(xml, file_name, catalogue, tax):
     contracts  = doc.findAll('contrato')
     
     if (len(contracts) < 1):
-        print "ERROR: NOT detected contracts!!!"
+        print "ERROR: NOT detected tos!!!"
         return
     
     first_contract = get_value(contracts[0])
     
-    # Making sure all contracts match!
+    # Making sure all tos match!
     for contract in contracts:
         if (get_value(contract) != first_contract):
-            print "ERROR: TOO MANY different contracts!!!"
+            print "ERROR: TOO MANY different tos!!!"
             return
     
     result['contract'] = str(first_contract)

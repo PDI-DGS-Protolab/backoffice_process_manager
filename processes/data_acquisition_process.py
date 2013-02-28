@@ -27,7 +27,7 @@ Created on 05/02/2013
 
 from models import BusinessProcess, SubProcess
 
-from notifications.tasks  import notify_salesforce_task, notify_tef_accounts_task
+from notifications.tasks  import notify_salesforce_task, notify_tef_accounts_task, activate_contract_task
 
 class DataAcquisitionProcess:
 
@@ -38,12 +38,13 @@ class DataAcquisitionProcess:
         return self._generate_acquire_data_subprocess(tef_account)
 
     def start_notify_acquired_data(self, status, master_info):
-        contact_id = master_info.tef_account
-        subprocess = master_info.subprocess
+        contact_id  = master_info.tef_account
+        subprocess  = master_info.subprocess
+        contract_id = master_info.contract
 
         sp_id = subprocess.id
 
-        chain = notify_salesforce_task.s(True, status, contact_id, sp_id) | notify_tef_accounts_task.s(status, contact_id, sp_id)
+        chain = activate_contract_task.s(True, contract_id, sp_id) | notify_salesforce_task.s(status, contact_id, sp_id) | notify_tef_accounts_task.s(status, contact_id, sp_id)
 
         chain()
 

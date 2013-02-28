@@ -12,8 +12,9 @@ def read_env(path):
     try:
         with open(path) as f:
             content = f.read()
-    except IOError:
+    except IOError, e:
         content = ''
+        print e
 
     for line in content.splitlines():
         m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)

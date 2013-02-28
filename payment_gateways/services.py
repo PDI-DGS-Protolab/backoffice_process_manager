@@ -32,6 +32,8 @@ from processes.data_acquisition_process import DataAcquisitionProcess
 
 from django.conf import settings
 
+from common.salesforce.salesforce import create_active_contract
+
 import importlib
 import uuid
 
@@ -41,7 +43,18 @@ class ServiceManager:
     def __init__(self):
         self.data_acquisition_process = DataAcquisitionProcess()
 
-    def initial_payment_url(self, token):
+    def isPaymentDataRegistered(self, user_data):
+        tef_account = user_data.tef_account
+        country     = user_data.country
+
+        master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country)
+
+        return len(master_infos) > 0
+
+    def createContract(self, user_data, activate):
+        create_active_contract(user_data)
+
+    def initial_payment_url(self, token, contract_id):
         user_data = self.get_user_data_by_token(token)
 
         (charger, gw) = self.get_first_available_charger_by_country(user_data.country)
@@ -50,7 +63,7 @@ class ServiceManager:
 
         url = charger.get_redirect_url(user_data)
 
-        self.store_master_information(user_data, charger.get_order(), gw)
+        self.store_master_information(user_data, charger.get_order(), gw, contract_id)
 
         return url
 
@@ -130,13 +143,13 @@ class ServiceManager:
         return True
 
 
-    def store_master_information(self, user_data, recurrent_order_code, gateway):
+    def store_master_information(self, user_data, recurrent_order_code, gateway, contract_id):
         # Creating subprocese
         subprocess = self.data_acquisition_process.create_acquire_data_subprocess(user_data.tef_account)
 
         # Linking master info and subprocess
         master_info = MasterInformation(tef_account=user_data.tef_account, recurrent_order_code=recurrent_order_code,
-                                         gateway=gateway, email=user_data.email, subprocess=subprocess)
+                                         gateway=gateway, email=user_data.email, subprocess=subprocess, contract_id=contract_id)
         master_info.save()
 
     def store_order(self, order_data):

@@ -27,7 +27,7 @@ Created on 15/10/2012
 
 from celery import task
 
-from common.salesforce.salesforce import update_contact
+from common.salesforce.salesforce import update_contact, activate_contract
 
 from processes.task_manager import TaskManager
 
@@ -40,4 +40,9 @@ def notify_salesforce_task(success, status, contact_id, sp_id):
 def notify_tef_accounts_task(success, status, contact_id, sp_id):
     tm = TaskManager()
     return tm.process_task(sp_id, 'NOTIFY TEF ACCOUNT', success, lambda : (True, None))
+
+@task(ignore_result=True)
+def activate_contract_task(success, status, contract_id, sp_id):
+    tm = TaskManager()
+    return tm.process_task(sp_id, 'ACTIVATE CONTRACT', success, lambda : activate_contract(None, contract_id))
 

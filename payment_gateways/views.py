@@ -84,6 +84,10 @@ class PaymentController:
 
             user_data = cls.serviceManager.get_user_data_by_token(token)
 
+            registered = cls.serviceManager.isPaymentDataRegistered(user_data)
+
+            print registered
+
             context = {
                         'code': token,
                         'email': user_data.email,
@@ -93,7 +97,8 @@ class PaymentController:
                         'city': user_data.city,
                         'last_name': user_data.last_name,
                         'first_name': user_data.first_name,
-                        'gender': user_data.gender
+                        'gender': user_data.gender,
+                        'registered': registered
                       }
 
             return render(request, 'payment_gateways/acquire_form.html', context)
@@ -110,7 +115,15 @@ class PaymentController:
 
             token = params('token', None)
 
-            url = cls.serviceManager.initial_payment_url(token)
+            user_data  = cls.serviceManager.get_user_data_by_token(token)
+            registered = cls.serviceManager.isPaymentDataRegistered(user_data)
+
+            contract_id = cls.serviceManager.createContract(user_data, registered)
+
+            url = "/payment/gw/worldpay/success"
+
+            if (not registered):
+                url = cls.serviceManager.initial_payment_url(token, contract_id)
 
             return HttpResponseRedirect(url)
         else:

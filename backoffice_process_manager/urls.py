@@ -8,6 +8,7 @@ import settings
 
 from payment_gateways.views import PaymentController
 from processes.views        import ProcessesController
+from processes.tos          import ToSController
 
 from payment_gateways.adyen.callback    import AdyenCallbackController
 from payment_gateways.worldpay.callback import WorldpayCallbackController
@@ -41,6 +42,12 @@ urlpatterns = patterns('',
     url(r'^processes/launch_invoicing/$',        ProcessesController.launch_invoicing),
     url(r'^processes/launch_sync_invoicing/$',   ProcessesController.launch_sync_invoice),
     url(r'^processes/getinfo/(?P<user_id>\w+)$', ProcessesController.get_processes),
+
+    ######################################################
+    # TERMS OF SERVICE
+    ######################################################
+
+    url(r'^tos/$', ToSController.show),
 
     ######################################################
     # STATIC CONTENT
