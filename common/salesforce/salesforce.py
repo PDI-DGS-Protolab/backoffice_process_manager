@@ -73,21 +73,21 @@ def get_catalogue():
     
     return catalogue
 
-def update_contact(status, contact_id):
+def update_contact(status, contact_id, invoicing_address):
     c = connect()
-
-    print contact_id
 
     new_contact    = c.generateObject('Contact')
     new_contact.Id = contact_id
 
     new_contact.PaymentState__c = status
+    new_contact.MailingPostalCode = invoicing_address['postal_code']
+    new_contact.MailingStreet = invoicing_address['address']
 
     c.update(new_contact)
 
     return (True, None)
 
-def create_contract(user_data, activate):
+def create_contract(user_data):
     c = connect()
 
     today = date.today()
@@ -118,15 +118,11 @@ def create_contract(user_data, activate):
 
     contract_id = result['id']
 
-    if (activate):
-        activate_contract(c, contract_id)
-
     return contract_id
 
-def activate_contract(c, contract_id):
+def activate_contract(contract_id):
 
-    if (not c):
-        c = connect()
+    c = connect()
 
     contract = c.generateObject('Contract')
 
@@ -134,5 +130,26 @@ def activate_contract(c, contract_id):
     contract.Id = contract_id
 
     c.update(contract)
+
+    return (True, None)
+
+def create_order_summary(invoice_json):
+
+    c = connect()
+
+    order_summary = c.generateObject('OrderSummary__c')
+    
+    order_summary.Contract__c = invoice_json['contract']
+    order_summary.Name = invoice_json['invoice']['month']
+    order_summary.Order_Status__c = "Billed"
+    order_summary.Invoice_Number__c = invoice_json['invoice']['number']
+    order_summary.Invoice_Date__c = invoice_json['invoice']['date']
+    order_summary.Contact__c = invoice_json['customer']['tef_account']
+    order_summary.Account__c = "001d000000Wi4CBAAZ"
+    order_summary.Total_Amount__c = invoice_json['total']
+    order_summary.Total_VAT__c = invoice_json['total'] - invoice_json['subtotal']
+    order_summary.Invoice_URI__c = "https://s3-eu-west-1.amazonaws.com/com.telefonicadigital.gbilling.pdf.invoices/" + invoice_json['pdf_file_name']
+    
+    c.create(order_summary)
 
     return (True, None)

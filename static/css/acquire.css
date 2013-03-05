@@ -1,6 +1,6 @@
 #subscribe-form form p {
-	margin-top: 10px;
-	margin-bottom: 10px;
+	margin-top: 0px;
+	margin-bottom: 0px;
 }
 
 #subscribe-form .errorlist {
@@ -14,4 +14,8 @@
 
 #subscribe-form .no-border {
 	border: 0px;
+}
+
+#subscribe-form .hidden {
+	display: None;
 }

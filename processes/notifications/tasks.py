@@ -27,14 +27,15 @@ Created on 15/10/2012
 
 from celery import task
 
-from common.salesforce.salesforce import update_contact, activate_contract
+from common.salesforce.salesforce import update_contact, activate_contract, create_order_summary
+from sdr_gen                      import generate_and_upload_sdr
 
 from processes.task_manager import TaskManager
 
 @task(ignore_result=True)
-def notify_salesforce_task(success, status, contact_id, sp_id):
+def notify_salesforce_task(success, status, contact_id, invoicing_address, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
+    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id, invoicing_address))
 
 @task(ignore_result=True)
 def notify_tef_accounts_task(success, status, contact_id, sp_id):
@@ -44,5 +45,17 @@ def notify_tef_accounts_task(success, status, contact_id, sp_id):
 @task(ignore_result=True)
 def activate_contract_task(success, contract_id, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'ACTIVATE CONTRACT', success, lambda : activate_contract(None, contract_id))
+    return tm.process_task(sp_id, 'ACTIVATE CONTRACT', success, lambda : activate_contract(contract_id))
 
+@task(ignore_result=True)
+def generate_sdr_and_upload_task(success, tef_account, contract_id, sp_id):
+    tm = TaskManager()
+    return tm.process_task(sp_id, 'GENERATE SDR & UPLOAD', success, lambda : generate_and_upload_sdr(tef_account, contract_id))
+
+@task(ignore_result=True)
+def create_order_summary_task(success, sp_id):
+    tm = TaskManager()
+    
+    invoice_json = tm.get_subprocess_data(sp_id)
+    
+    return tm.process_task(sp_id, 'CREATE ORDER SUMMARY', success, lambda : create_order_summary(invoice_json))

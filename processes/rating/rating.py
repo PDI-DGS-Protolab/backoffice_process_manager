@@ -34,12 +34,12 @@ from catalogue import CATALOGUE, TAX
 def round_price(price):
     return round(price*100)/100
 
-def download_and_parse_sdr(bucket_key):
+def download_and_parse_sdr(bucket_key, tef_account):
     xml = get_bucket_key_content(bucket_key)
     
-    return parse_sdr(xml, bucket_key, CATALOGUE, TAX)
+    return parse_sdr(xml, bucket_key, tef_account, CATALOGUE, TAX)
 
-def parse_sdr(xml, file_name, catalogue, tax):
+def parse_sdr(xml, file_name, tef_account, catalogue, tax):
     doc = BeautifulSoup(xml)
     
     result = {}
@@ -61,7 +61,8 @@ def parse_sdr(xml, file_name, catalogue, tax):
             print "ERROR: TOO MANY different tos!!!"
             return
     
-    result['contract'] = str(first_contract)
+    result['contract']    = str(first_contract)
+    result['tef_account'] = str(tef_account)
     
     consumptions = doc.findAll('consumo_variable')
     

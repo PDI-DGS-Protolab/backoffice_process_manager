@@ -1,0 +1,22 @@
+/*
+Hoja de estilos para tipografias corporativas
+*/
+
+
+@font-face {
+	font-family: 'TelefonicaTextRegular';
+	src: url('fonts/telefonicatext-regular.eot');
+	src: local('☺'), url('../fonts/telefonicatext-regular.woff') format('woff'), url('../fonts/telefonicatext-regular.otf') format('opentype'), url('../fonts/telefonicatext-regular.svg') format('svg');
+}
+
+@font-face {
+	font-family: 'TelefonicaTextBold';
+	src: url('fonts/telefonicatextbold.eot');
+	src: local('☺'), url('../fonts/telefonicatextbold.woff') format('woff'), url('../fonts/telefonicatextbold.otf') format('opentype'), url('../fonts/telefonicatextbold.svg') format('svg');
+}
+
+@font-face {
+	font-family: 'TelefonicaHeadlineLightRegula';
+	src: url('fonts/telefonicaheadline-light.eot');
+	src: local('☺'), url('../fonts/telefonicaheadline-light.woff') format('woff'), url('../fonts/telefonicaheadline-light.otf') format('opentype'), url('../fonts/telefonicaheadline-light.svg') format('svg');
+}

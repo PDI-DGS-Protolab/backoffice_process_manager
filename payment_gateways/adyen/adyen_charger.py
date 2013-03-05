@@ -109,7 +109,9 @@ class Adyen_Charger (PaymentGateway):
         master_info.save()
 
         # Start Async notify process
-        self.data_acquisition_manager.start_notify_acquired_data('Billable', master_info)
+        self.data_acquisition_manager.start_notify_acquired_data('Billable', master_info.tef_account,
+                                                                  master_info.subprocess.id, master_info.contract,
+                                                                  master_info.acquired_data)
 
         return True
 

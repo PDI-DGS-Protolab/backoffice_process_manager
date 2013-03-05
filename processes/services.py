@@ -38,18 +38,18 @@ class ProcessManager:
         keys = get_sdr_request_keys()
 
         for key in keys:
-            self.order_to_cash_process.start_order_to_cash_process(key, self._get_tef_account(key))
+            self.order_to_cash_process.start_order_to_cash_process(key.name, self._get_tef_account(key))
 
     def sync_first_order_to_cash(self):
         keys = get_sdr_request_keys()
 
         for key in keys:
-            self.order_to_cash_process.sync_order_to_cash(key, self._get_tef_account(key))
+            self.order_to_cash_process.sync_order_to_cash(key.name, self._get_tef_account(key))
             break
 
     def _get_tef_account(self, key):
         # By convention, by removing the last 4 characters from key, the tef_account is returned!
-        return key[0:-4]
+        return key.name[0:-4]
 
     def get_processes_by_user(self, user_id):
         processes = models.BusinessProcess.objects.filter(tef_account=user_id).order_by("start")

@@ -54,34 +54,6 @@ class PaymentGateway(models.Model):
     
     country    = models.CharField(max_length = 3)
 
-class MasterInformation(models.Model):
-
-    gateway     = models.ForeignKey(PaymentGateway)
-    
-    tef_account = models.CharField(max_length = 20)
-    email       = models.EmailField(blank=True)
-    
-    recurrent_order_code = models.CharField(max_length=10)
-    
-    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
-    
-    subprocess = models.ForeignKey(SubProcess, null=True)
-    contract = models.CharField(max_length = 20)
-
-class Order(models.Model):
-
-    total    = models.IntegerField()
-    currency = models.CharField(max_length = 3)
-    country  = models.CharField(max_length = 3)
-    
-    order_code  = models.CharField(max_length=10)
-    tef_account = models.CharField(max_length = 20)
-
-    statement = models.CharField(max_length = 200)
-
-    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
-    result = models.TextField()
-
 class AcquiredData(models.Model):
 
     tef_account = models.CharField(max_length = 20)
@@ -99,3 +71,33 @@ class AcquiredData(models.Model):
     phone       = models.CharField(max_length = 10)
 
     token = models.CharField(unique=True, max_length=10)
+
+class MasterInformation(models.Model):
+
+    gateway     = models.ForeignKey(PaymentGateway)
+    
+    tef_account = models.CharField(max_length = 20)
+    email       = models.EmailField(blank=True)
+    
+    recurrent_order_code = models.CharField(max_length=10)
+    
+    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
+    
+    subprocess = models.ForeignKey(SubProcess, null=True)
+    contract = models.CharField(max_length = 20)
+
+    acquired_data = models.ForeignKey(AcquiredData)
+
+class Order(models.Model):
+
+    total    = models.IntegerField()
+    currency = models.CharField(max_length = 3)
+    country  = models.CharField(max_length = 3)
+    
+    order_code  = models.CharField(max_length=10)
+    tef_account = models.CharField(max_length = 20)
+
+    statement = models.CharField(max_length = 200)
+
+    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
+    result = models.TextField()

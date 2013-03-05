@@ -1,19 +1,19 @@
 #!/usr/bin/python
-# coding=utf-8 
+# coding=utf-8
 
 """
 Copyright 2012 Telefonica Investigación y Desarrollo, S.A.U
 
 This file is part of Billing_PoC.
 
-Billing_PoC is free software: you can redistribute it and/or modify it under the terms 
-of the GNU Affero General Public License as published by the Free Software Foundation, either 
+Billing_PoC is free software: you can redistribute it and/or modify it under the terms
+of the GNU Affero General Public License as published by the Free Software Foundation, either
 version 3 of the License, or (at your option) any later version.
-Billing_PoC is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero 
+Billing_PoC is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
 General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License along with Billing_PoC. 
+You should have received a copy of the GNU Affero General Public License along with Billing_PoC.
 If not, see http://www.gnu.org/licenses/.
 
 For those usages not covered by the GNU Affero General Public License please contact with::mac@tid.es
@@ -51,19 +51,19 @@ class ServiceManager:
 
         return len(master_infos) > 0
 
-    def createContract(self, user_data, activate):
-        return create_contract(user_data, activate)
+    def createContract(self, user_data):
+        return create_contract(user_data)
 
     def initial_payment_url(self, token, contract_id):
-        user_data = self.get_user_data_by_token(token)
+        acquired_data = self.get_acquired_data_by_token(token)
 
-        (charger, gw) = self.get_first_available_charger_by_country(user_data.country)
+        (charger, gw) = self.get_first_available_charger_by_country(acquired_data.country)
         if (charger == None):
             return "/error"
 
-        url = charger.get_redirect_url(user_data)
+        url = charger.get_redirect_url(acquired_data)
 
-        self.store_master_information(user_data, charger.get_order(), gw, contract_id)
+        self.store_master_information(acquired_data, charger.get_order(), gw, contract_id)
 
         return url
 
@@ -143,13 +143,14 @@ class ServiceManager:
         return True
 
 
-    def store_master_information(self, user_data, recurrent_order_code, gateway, contract_id):
+    def store_master_information(self, acquired_data, recurrent_order_code, gateway, contract_id):
         # Creating subprocese
-        subprocess = self.data_acquisition_process.create_acquire_data_subprocess(user_data.tef_account)
+        subprocess = self.data_acquisition_process.create_acquire_data_subprocess(acquired_data.tef_account)
 
         # Linking master info and subprocess
-        master_info = MasterInformation(tef_account=user_data.tef_account, recurrent_order_code=recurrent_order_code,
-                                         gateway=gateway, email=user_data.email, subprocess=subprocess, contract=contract_id)
+        master_info = MasterInformation( tef_account=acquired_data.tef_account, recurrent_order_code=recurrent_order_code,
+                                         gateway=gateway, email=acquired_data.email, subprocess=subprocess, contract=contract_id,
+                                         acquired_data=acquired_data)
         master_info.save()
 
     def store_order(self, order_data):
@@ -179,8 +180,6 @@ class ServiceManager:
 
         url = settings.DEPLOY_URL + "/payment/acquire/form/" + token
 
-        print url
-
         return url
 
     def get_user_data_by_token(self, token):
@@ -192,6 +191,21 @@ class ServiceManager:
 
         return user_data
 
+    def get_acquired_data_by_token(self, token):
+        acquired_data = AcquiredData.objects.get(token=token)
+
+        return acquired_data
+
+    def update_acquired_data(self, params):
+        token = params('token', None)
+
+        acquired_data = AcquiredData.objects.get(token=token)
+
+        acquired_data.address     = params('address', None)
+        acquired_data.city        = params('city', None)
+        acquired_data.postal_code = params('postal_code', 454)
+
+        acquired_data.save()
 
     def compute_unique_id(self):
         uid = uuid.uuid4()

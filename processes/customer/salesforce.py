@@ -45,7 +45,7 @@ def get_customer_details_from_sf(account_id):
     }
 
 def customer_details_from_sf(invoice_json):
-    account_id = invoice_json['contract']
+    account_id = invoice_json['tef_account']
     
     # Adding customer details
     invoice_json['customer'] = get_customer_details_from_sf(account_id)

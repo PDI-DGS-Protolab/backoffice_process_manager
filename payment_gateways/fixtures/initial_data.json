@@ -33,7 +33,8 @@
   			  "gateway": 2, 
   			  "tef_account": "1928jj2js", 
   			  "email": "mac@tid.es",
-              "contract": "00000112"
+              "contract": "00000112",
+              "acquired_data": 5
   			  }
   },
   {"pk": 2,
@@ -43,7 +44,8 @@
                 "gateway": 2,
                 "tef_account": "003d000000wX82sAAC",
                 "email": "mac@tid.es",
-                "contract": "00000112"
+                "contract": "00000112",
+                "acquired_data": 5
     }
   },
   {"pk": 4,
