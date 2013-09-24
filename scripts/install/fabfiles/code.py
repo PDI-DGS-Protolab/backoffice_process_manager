@@ -6,9 +6,9 @@ execute = run
 
 def install_base():
 
-    put('../base-dependencies.sh', '.')
+    put('../dependencies/base.sh', '.')
 
-    execute('chmod +x ~/base-dependencies.sh; ~/base-dependencies.sh; rm ~/base-dependencies.sh')
+    execute('chmod +x ~/base.sh; ~/base.sh; rm ~/base.sh')
 
 def clone():
     put('../config/cli.env', '.')
@@ -32,7 +32,7 @@ def update():
 
         cd "$REPO_NAME"
         git pull origin $BRANCH
-        sh ./scripts/install/project-dependencies.sh
+        sh ./scripts/install/dependencies/code.sh
         pip install -r requirements.txt
         wget --output-document .env $AWS_URL
         python manage.py collectstatic --noinput
