@@ -8,7 +8,7 @@ def install_base():
 
     put('../base-dependencies.sh', '.')
 
-    execute('chmod +x /tmp/base-dependencies.sh; /tmp/base-dependencies.sh; rm ~/base-dependencies.sh')
+    execute('chmod +x ~/base-dependencies.sh; ~/base-dependencies.sh; rm ~/base-dependencies.sh')
 
 def clone():
     put('../config/cli.env', '.')
