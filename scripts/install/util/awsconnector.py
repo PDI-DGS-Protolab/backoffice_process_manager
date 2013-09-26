@@ -82,4 +82,3 @@ def terminateInstances ( instaceIds ):
         instance_ids=instaceIds )
 
 read_env('../config/cli.env')
-print "SUP NIGGA!"
