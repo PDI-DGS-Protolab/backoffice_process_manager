@@ -2,9 +2,12 @@
 
 import argparse
 from os import listdir, system
+from subprocess import call
 from os.path import join
 from sys import exit
 import re
+from fabric.context_managers import settings
+import importlib
 
 fabfilesPath = "./fabfiles"
 
@@ -17,7 +20,8 @@ def main ():
 
     fabfiles = [ f for f in listdir(fabfilesPath) if re.match(r'^.+\.py$', f) ]
     for f in fabfiles:
-        if args.role == f.split('.')[0]:
+        f = f.split('.')[0]
+        if args.role == f:
             role = f
     if not role:
         print "Invalid role"
@@ -33,8 +37,13 @@ def main ():
 
 
 def makeCall ( role, action, url ):
-    fabcall = 'fab -f ' + join(fabfilesPath, role) + ' ' + action + ' -H ' + url + ' -i ~/.ssh/protolab2.pem'
+    # fabcall = 'fab -f ' + join(fabfilesPath, role) + ' ' + action + ' -H ' + url + ' -i ~/.ssh/protolab2.pem'
     # fab -f code.py install_base -H ec2-user@ec2-54-214-198-97.us-west-2.compute.amazonaws.com -i ~/Descargas/protolab2.pem
-    system(fabcall)
+    # call(fabcall)
+    
+    fabfile = importlib.import_module('fabfiles.' + role, role)
+
+    with settings(host_string=url, key_filename='~/.ssh/protolab2.pem'):
+        getattr(fabfile,action)()
 
 main()

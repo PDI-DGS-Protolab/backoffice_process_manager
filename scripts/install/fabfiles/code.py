@@ -1,7 +1,7 @@
-import os
+import os, sys
 from fabric.api import run,local
 from fabric.operations import put
-from utils.awsconnector import launchInstances
+from util.awsconnector import launchInstances
 
 execute = run
 
@@ -17,12 +17,12 @@ def vm():
 
 def install_base():
 
-    put('../dependencies/base.sh', '.')
+    put('dependencies/base.sh', '.')
 
     execute('chmod +x ~/base.sh; ~/base.sh; rm ~/base.sh')
 
 def clone():
-    put('../config/cli.env', '.')
+    put('config/cli.env', '.')
 
     execute('''
         source ~/cli.env

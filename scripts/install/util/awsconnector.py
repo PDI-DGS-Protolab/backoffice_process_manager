@@ -1,5 +1,5 @@
 import fabric
-import boto.ec2
+import boto.ec2, boto.s3
 import re
 import time
 
@@ -28,7 +28,7 @@ def read_env(path):
             config[key] = val
 
 
-def connect ():
+def connectec2 ():
     conn = boto.ec2.connect_to_region(
         'us-west-2',
         aws_access_key_id=config['AWS_ACCESS_KEY_ID'],
@@ -41,7 +41,7 @@ def connect ():
 
 
 def launchInstances ( keyName, instanceType, securityGroups ):
-    conn = connect()
+    conn = connectec2()
     reservation = conn.run_instances(
         config['AWS_AMI_ID'],
         min_count=1,
@@ -64,21 +64,21 @@ def launchInstances ( keyName, instanceType, securityGroups ):
         return
 
 def startInstances ( instaceIds ):
-    conn = connect()
+    conn = connectec2()
     return conn.start_instances(
         instance_ids=instaceIds )
 
 
 def stopInstances ( instaceIds, force=False ):
-    conn = connect()
+    conn = connectec2()
     return conn.stop_instances(
         instance_ids=instaceIds,
         force=force )
 
  
 def terminateInstances ( instaceIds ):
-    conn = connect()
+    conn = connectec2()
     return conn.terminate_instances(
         instance_ids=instaceIds )
 
-read_env('../config/cli.env')
+read_env('config/cli.env')
