@@ -1,5 +1,8 @@
 import os
 from utils.awsconnector import launchInstances, download, upload
+from fabric.api import run, local
+
+execute = run
 
 def vm():
     config = open("config/cli.env",'r')
@@ -17,4 +20,13 @@ def vm():
     f.close()
     upload('.env','.env')
     os.remove('.env')
+
+def sync():
+    execute('''
+        source ~/cli.env
+        cd "$REPO_NAME"
+        source venv/bin/activate
+        cd "$REPO_NAME"
+        ./manage.py syncdb
+        ''')
 
