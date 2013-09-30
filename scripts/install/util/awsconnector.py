@@ -40,6 +40,15 @@ def connectec2 ():
         return conn
 
 
+def connects3 ():
+    conn = boto.connect_s3(config['AWS_ACCESS_KEY_ID'], config['AWS_SECRET_ACCESS_KEY'])
+
+    if not conn:
+        print ('Connection error')
+    else: 
+        return conn
+
+
 def launchInstances ( keyName, instanceType, securityGroups ):
     conn = connectec2()
     reservation = conn.run_instances(
@@ -63,6 +72,7 @@ def launchInstances ( keyName, instanceType, securityGroups ):
         print('Instance status: ' + status)
         return
 
+
 def startInstances ( instaceIds ):
     conn = connectec2()
     return conn.start_instances(
@@ -80,5 +90,21 @@ def terminateInstances ( instaceIds ):
     conn = connectec2()
     return conn.terminate_instances(
         instance_ids=instaceIds )
+
+
+def download ( keyName, fileName ):
+    conn = connects3()
+    bucket_name = config['BUCKET_NAME']
+    bucket = conn.get_bucket(bucket_name)
+    key = bucket.get_key(keyName)
+    key.get_contents_to_filename(fileName)
+
+def upload ( keyName, fileName ):
+    conn = connects3()
+    bucket_name = config['BUCKET_NAME']
+    bucket = conn.get_bucket(bucket_name)
+    key = bucket.get_key(keyName)
+    key.set_contents_from_filename(fileName, replace=true)
+
 
 read_env('config/cli.env')
