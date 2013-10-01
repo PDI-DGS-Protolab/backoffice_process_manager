@@ -7,13 +7,23 @@ execute = run
 
 def vm():
     config = open("config/cli.env",'r')
-    env = readlines(config)
+    env = config.readlines()
     config.close()
     for var in env:
-        keyVal = split(var,"=")
+        keyVal = var.split("=")
         os.environ[keyVal[0]] = keyVal[1]
 
-    launchInstances(os.environ[AWS_KEY],os.environ[INSTANCE_TYPE],os.environ[SECURITY_GROUP])
+    instance = launchInstances(os.environ[AWS_KEY],os.environ[INSTANCE_TYPE],os.environ[SECURITY_GROUP])
+
+    with open('config/cli.env', 'r') as f:
+        lines = f.readlines()
+    
+    for i in range(len(lines)):
+        if 'CODE_HOST' in lines[i]:
+            lines[i] = 'CODE_HOST=' + instance.public_dns_name + '\n'
+    
+    with open('config/cli.env', 'w') as f:
+        f.writelines(lines)
 
 def install_base():
 

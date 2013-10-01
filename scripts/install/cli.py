@@ -29,14 +29,26 @@ def main ():
 
     action = args.action
 
-    if args.vm:
-        makeCall(role, 'vm', url)
+    if role == "db":
+        with open('config/cli.env', 'r') as f:
+            lines = f.readlines()
+            for l in lines:
+                if 'DB_HOST' in l:
+                    url = l.split('=')[1]
+    elif role == "code":
+        with open('config/cli.env', 'r') as f:
+            lines = f.readlines()
+            for l in lines:
+                if 'CODE_HOST' in l:
+                    url = l.split('=')[1]
 
-    url = "ec2-user@ec2-54-214-198-97.us-west-2.compute.amazonaws.com"
+    if args.vm:
+        makeCall(role, 'vm')
+
     makeCall(role, action, url)
 
 
-def makeCall ( role, action, url ):
+def makeCall ( role, action, url=None ):
     # fabcall = 'fab -f ' + join(fabfilesPath, role) + ' ' + action + ' -H ' + url + ' -i ~/.ssh/protolab2.pem'
     # fab -f code.py install_base -H ec2-user@ec2-54-214-198-97.us-west-2.compute.amazonaws.com -i ~/Descargas/protolab2.pem
     # call(fabcall)
