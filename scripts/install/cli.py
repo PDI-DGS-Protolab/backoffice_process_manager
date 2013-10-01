@@ -34,13 +34,13 @@ def main ():
             lines = f.readlines()
             for l in lines:
                 if 'DB_HOST' in l:
-                    url = l.split('=')[1]
+                    url = 'ec2-user@' + l.split('=')[1][0:-1]
     elif role == "code":
         with open('config/cli.env', 'r') as f:
             lines = f.readlines()
             for l in lines:
                 if 'CODE_HOST' in l:
-                    url = l.split('=')[1]
+                    url = 'ec2-user@' + l.split('=')[1][0:-1]
 
     if args.vm:
         makeCall(role, 'vm')

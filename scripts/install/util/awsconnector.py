@@ -49,7 +49,7 @@ def connects3 ():
         return conn
 
 
-def launchInstances ( keyName, instanceType, securityGroups ):
+def launchInstances ( keyName, instanceType, securityGroups=None ):
     conn = connectec2()
     reservation = conn.run_instances(
         config['AWS_AMI_ID'],

@@ -10,10 +10,11 @@ def vm():
     env = config.readlines()
     config.close()
     for var in env:
-        keyVal = var.split("=")
-        os.environ[keyVal[0]] = keyVal[1]
+        if not (var == ""):
+            keyVal = var.split("=")
+            os.environ[keyVal[0]] = keyVal[1][0:-1]
 
-    instance = launchInstances(os.environ[AWS_KEY],os.environ[INSTANCE_TYPE],os.environ[SECURITY_GROUP])
+    instance = launchInstances(os.environ['AWS_KEY'],os.environ['INSTANCE_TYPE'])
 
     with open('config/cli.env', 'r') as f:
         lines = f.readlines()

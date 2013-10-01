@@ -12,9 +12,10 @@ def vm():
     env = config.readlines()
     config.close()
     for var in env:
-        keyVal = var.split("=")
-        os.environ[keyVal[0]] = keyVal[1]
-    instance = launchInstances(os.environ[AWS_KEY],os.environ[INSTANCE_TYPE],os.environ[SECURITY_GROUP])
+        if not (var == ""):
+            keyVal = var.split("=")
+            os.environ[keyVal[0]] = keyVal[1][0:-1]
+    instance = launchInstances(os.environ['AWS_KEY'],os.environ['INSTANCE_TYPE'])
     
     download('.env', '.env')
     with open('.env', 'r') as f:
