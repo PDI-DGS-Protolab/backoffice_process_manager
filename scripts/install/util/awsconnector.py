@@ -105,6 +105,7 @@ def upload ( keyName, fileName ):
     bucket = conn.get_bucket(bucket_name)
     key = bucket.get_key(keyName)
     key.set_contents_from_filename(fileName, replace=true)
+    key.make_public()
 
 
 read_env('config/cli.env')
