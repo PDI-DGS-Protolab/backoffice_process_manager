@@ -42,7 +42,7 @@ def launchInstances(keyName, instanceType, securityGroups, ami_id):
         max_count=1,
         key_name=keyName,
         instance_type=instanceType,
-        security_groups=securityGroups )
+        security_groups=[securityGroups])
     instance = reservation.instances[0]
     print('Waiting for instance to start...')
     # Check up on its status every so often
