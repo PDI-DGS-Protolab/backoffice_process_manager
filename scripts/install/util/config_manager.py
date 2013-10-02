@@ -16,8 +16,8 @@ def set_local(filename, property_name, value):
         lines = f.readlines()
 
     for i in range(len(lines)):
-        if 'DNS' in lines[i]:
-            lines[i] = 'DNS=' + value + '\n'
+        if property_name in lines[i]:
+            lines[i] = property_name + '=' + value + '\n'
 
     with open(filename, 'w') as f:
         f.writelines(lines)
