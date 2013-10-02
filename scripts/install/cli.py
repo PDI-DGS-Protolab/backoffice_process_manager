@@ -7,7 +7,7 @@ from sys import exit
 from fabric.context_managers import settings
 from fabric.api import env
 
-from util.config_manager import get_local, load_into_os_environment
+from util.config_manager import get_local, load_into_os_environment, check_locals
 
 import re
 import importlib
@@ -49,6 +49,8 @@ def main():
         exit(1)
 
     # Reading cli configuration file and adding it to the process environment
+    if not check_locals('config/cli.env'):
+        exit(1)
     load_into_os_environment('config/cli.env')
 
     makeCall(role, action, dns)
