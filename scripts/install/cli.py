@@ -1,61 +1,61 @@
 #! /usr/bin/python
 
-import argparse
-from os import listdir, system
-from subprocess import call
-from os.path import join
+from os import listdir, environ
 from sys import exit
-import re
+
 from fabric.context_managers import settings
+
+from util.config_manager import get_local, load_into_os_environment
+
+import re
 import importlib
+import argparse
+
 
 fabfilesPath = "./fabfiles"
 
 def main ():
     parser = argparse.ArgumentParser()
+
     parser.add_argument("role", help="Role that will perform the action")
     parser.add_argument("action", help="Action to perform")
     parser.add_argument("-vm", help="Creates a virtual machine USE WITH CARE", action="store_true")
+
     args = parser.parse_args()
 
     fabfiles = [ f for f in listdir(fabfilesPath) if re.match(r'^.+\.py$', f) ]
+
     for f in fabfiles:
         f = f.split('.')[0]
         if args.role == f:
             role = f
+
     if not role:
         print "Invalid role"
         exit(1)
 
     action = args.action
 
-    if role == "db":
-        with open('config/cli.env', 'r') as f:
-            lines = f.readlines()
-            for l in lines:
-                if 'DB_HOST' in l:
-                    url = l.split('=')[1]
-    elif role == "code":
-        with open('config/cli.env', 'r') as f:
-            lines = f.readlines()
-            for l in lines:
-                if 'CODE_HOST' in l:
-                    url = l.split('=')[1]
+    # Reading role configuration file
+    dns = get_local('config/{0}.env'.format(role), 'DNS')
 
-    if args.vm:
-        makeCall(role, 'vm')
+    if not dns and action != 'vm':
+        print "Create a VM first"
+        exit(1)
 
-    makeCall(role, action, url)
+    # Reading cli configuration file and adding it to the process environment
+    load_into_os_environment('config/cli.env')
 
+    makeCall(role, action, dns)
 
-def makeCall ( role, action, url=None ):
+def makeCall ( role, action, dns=None):
     # fabcall = 'fab -f ' + join(fabfilesPath, role) + ' ' + action + ' -H ' + url + ' -i ~/.ssh/protolab2.pem'
     # fab -f code.py install_base -H ec2-user@ec2-54-214-198-97.us-west-2.compute.amazonaws.com -i ~/Descargas/protolab2.pem
     # call(fabcall)
     
     fabfile = importlib.import_module('fabfiles.' + role, role)
 
-    with settings(host_string=url, key_filename='~/.ssh/protolab2.pem'):
+    with settings(host_string=dns, key_filename=environ['PEM']):
         getattr(fabfile,action)()
 
 main()
