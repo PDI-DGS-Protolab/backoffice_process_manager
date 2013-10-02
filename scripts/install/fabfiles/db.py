@@ -53,3 +53,14 @@ def sync():
         cd "$REPO_NAME"
         ./manage.py syncdb
         ''')
+
+
+def help():
+    print '''ROLE:
+        db
+
+    ACTIONS:
+        help            Show this message
+        vm              Creates a VM in AWS and updates the .env files
+        sync            Synchronize the database
+        '''

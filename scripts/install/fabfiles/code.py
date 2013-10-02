@@ -85,3 +85,18 @@ def stop():
         killall -9 gunicorn
         killall -9 python
         ''')
+
+
+def help():
+    print '''ROLE:
+        code
+
+    ACTIONS:
+        help            Shows this message
+        vm              Creates a VM in AWS and updates the .env files
+        clone           Clones the repository and switches to the current branch
+        update          Updates the code in the current branch and the requirements if necessary
+        run             Starts the service saving the generated logs in a file
+        logs            Shows the output logs generated in the ejecution of the service
+        stop            Stops the service
+        '''
