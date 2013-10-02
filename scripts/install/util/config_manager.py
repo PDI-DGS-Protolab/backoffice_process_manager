@@ -12,15 +12,27 @@ def get_local(filename, property_name):
 
 
 def set_local(filename, property_name, value):
-    with open(filename, 'r') as f:
-        lines = f.readlines()
+    lines = _read_file(filename)
 
     for i in range(len(lines)):
         if property_name in lines[i]:
             lines[i] = property_name + '=' + value + '\n'
 
-    with open(filename, 'w') as f:
-        f.writelines(lines)
+    _write_file(filename, lines)
+
+
+def check_locals(filename):
+    # Checks if all the variables are set
+    env = _read_file(filename)
+    res = True
+
+    for l in env:
+        var = l.split('=')
+        if len(var) < 2:
+            print 'The variable ' + var[0] + ' is not set'
+            res = False
+
+    return res
 
 
 def load_into_os_environment(filename):
@@ -40,3 +52,7 @@ def load_into_os_environment(filename):
 def _read_file(filename):
     with open(filename, 'r') as f:
         return f.readlines()
+
+def _write_file(filename, content):
+    with open(filename, 'w') as f:
+        f.writelines(content)
