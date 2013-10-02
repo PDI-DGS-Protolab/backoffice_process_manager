@@ -27,11 +27,12 @@ def load_into_os_environment(file):
 
     for var in env:
         if '=' not in var:
-            ## Allowing empty lines
+            # Allowing empty lines
             continue
 
         (key, value) = var.split("=")
-        os.environ[key] = value.rstrip() # Removing last "\n" char
+        os.environ[key] = value.rstrip()  # Removing last "\n" char
+
 
 def _read_file(file):
     with open(file, 'r') as f:

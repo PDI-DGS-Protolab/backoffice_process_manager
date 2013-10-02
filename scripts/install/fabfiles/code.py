@@ -1,28 +1,31 @@
 import os
-from fabric.api import run,local
+from fabric.api import run, local
 from fabric.operations import put
 
-from util.awsconnector   import launchInstances
+from util.awsconnector import launchInstances
 from util.config_manager import set_local, get_local
 
 execute = run
 
 CONFIG_FILE = 'config/code.env'
 
+
 def vm():
     ami_id = get_local(CONFIG_FILE, 'AWS_AMI_ID')
-    type   = get_local(CONFIG_FILE, 'AWS_INSTANCE_TYPE')
-    sec    = get_local(CONFIG_FILE, 'AWS_SECURITY_GROUP')
+    type = get_local(CONFIG_FILE, 'AWS_INSTANCE_TYPE')
+    sec = get_local(CONFIG_FILE, 'AWS_SECURITY_GROUP')
 
     instance = launchInstances(os.environ['AWS_KEY_PAIR'], type, sec, ami_id)
 
     set_local(CONFIG_FILE, 'DNS', instance.public_dns_name)
     set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)
 
+
 def install_base():
     put('dependencies/base.sh', '.')
 
     execute('chmod +x ~/base.sh; ~/base.sh; rm ~/base.sh')
+
 
 def clone():
     put('config/cli.env', '.')
@@ -38,6 +41,7 @@ def clone():
         git checkout $BRANCH
         ''')
 
+
 def update():
     execute('''
         source ~/cli.env
@@ -52,6 +56,7 @@ def update():
         python manage.py collectstatic --noinput
         ''')
 
+
 def run():
     execute('''
     source ~/cli.env
@@ -65,12 +70,14 @@ def run():
     exit
     ''', pty=False)
 
+
 def logs():
     execute('''
     source ~/cli.env
     cd "$REPO_NAME"/"$REPO_NAME"
     tail -f out.log
     ''')
+
 
 def stop():
     execute('''
