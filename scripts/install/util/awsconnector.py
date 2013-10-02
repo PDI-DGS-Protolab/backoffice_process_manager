@@ -1,38 +1,14 @@
-import fabric
 import boto.ec2, boto.s3
-import re
 import time
+import os
 
-config = {}
-
-
-def read_env(path):
-    try:
-        with open(path) as f:
-            content = f.read()
-    except IOError, e:
-        content = ''
-        print e
-
-    for line in content.splitlines():
-        m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
-        if m1:
-            key, val = m1.group(1), m1.group(2)
-            m2 = re.match(r"\A'(.*)'\Z", val)
-            if m2:
-                val = m2.group(1)
-            m3 = re.match(r'\A"(.*)"\Z', val)
-            if m3:
-                val = re.sub(r'\\(.)', r'\1', m3.group(1))
-            # os.environ.setdefault(key, val)
-            config[key] = val
-
+config = os.environ
 
 def connectec2 ():
     conn = boto.ec2.connect_to_region(
-        'us-west-2',
-        aws_access_key_id=config['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key=config['AWS_SECRET_ACCESS_KEY'])
+        config['AWS_REGION'],
+        aws_access_key_id     = config['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key = config['AWS_SECRET_ACCESS_KEY'])
 
     if not conn:
         print ('Connection error')
@@ -49,10 +25,16 @@ def connects3 ():
         return conn
 
 
-def launchInstances ( keyName, instanceType, securityGroups=None ):
+def launchInstances (keyName, instanceType, securityGroups, ami_id):
+
+    print keyName
+    print instanceType
+    print securityGroups
+    print ami_id
+
     conn = connectec2()
     reservation = conn.run_instances(
-        config['AWS_AMI_ID'],
+        ami_id,
         min_count=1,
         max_count=1,
         key_name=keyName,
@@ -104,8 +86,6 @@ def upload ( keyName, fileName ):
     bucket_name = config['BUCKET_NAME']
     bucket = conn.get_bucket(bucket_name)
     key = bucket.get_key(keyName)
-    key.set_contents_from_filename(fileName, replace=true)
+    key.set_contents_from_filename(fileName, replace=True)
     key.make_public()
 
-
-read_env('config/cli.env')

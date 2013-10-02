@@ -1,33 +1,25 @@
-import os, sys
+import os
 from fabric.api import run,local
 from fabric.operations import put
-from util.awsconnector import launchInstances
+
+from util.awsconnector   import launchInstances
+from util.config_manager import set_local, get_local
 
 execute = run
 
+CONFIG_FILE = 'config/code.env'
+
 def vm():
-    config = open("config/cli.env",'r')
-    env = config.readlines()
-    config.close()
-    for var in env:
-        if not (var == ""):
-            keyVal = var.split("=")
-            os.environ[keyVal[0]] = keyVal[1][0:-1]
+    ami_id = get_local(CONFIG_FILE, 'AWS_AMI_ID')
+    type   = get_local(CONFIG_FILE, 'AWS_INSTANCE_TYPE')
+    sec    = get_local(CONFIG_FILE, 'AWS_SECURITY_GROUP')
 
-    instance = launchInstances(os.environ['AWS_KEY'],os.environ['INSTANCE_TYPE'])
+    instance = launchInstances(os.environ['AWS_KEY_PAIR'], type, sec, ami_id)
 
-    with open('config/cli.env', 'r') as f:
-        lines = f.readlines()
-    
-    for i in range(len(lines)):
-        if 'CODE_HOST' in lines[i]:
-            lines[i] = 'CODE_HOST=' + instance.public_dns_name + '\n'
-    
-    with open('config/cli.env', 'w') as f:
-        f.writelines(lines)
+    set_local(CONFIG_FILE, 'DNS', instance.public_dns_name)
+    set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)
 
 def install_base():
-
     put('dependencies/base.sh', '.')
 
     execute('chmod +x ~/base.sh; ~/base.sh; rm ~/base.sh')
