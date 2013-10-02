@@ -7,42 +7,21 @@ execute = run
 import os
 from util.awsconnector import launchInstances, download, upload
 
+CONFIG_FILE = 'config/db.env'
+
 
 def vm():
-    config = open("config/cli.env", 'r')
-    env = config.readlines()
-    config.close()
-    for var in env:
-        if not (var == ""):
-            keyVal = var.split("=")
-            os.environ[keyVal[0]] = keyVal[1][0:-1]
+    type = get_local(CONFIG_FILE, 'INSTANCE_TYPE')
     instance = launchInstances(
-        os.environ['AWS_KEY'], os.environ['INSTANCE_TYPE'])
+        os.environ['AWS_KEY_PAIR'], type)
 
     download('.env', '.env')
-    with open('.env', 'r') as f:
-        lines = f.readlines()
-
-    for i in range(len(lines)):
-        if 'DB_HOST' in lines[i]:
-            lines[i] = 'DB_HOST=' + instance.public_dns_name + '\n'
-
-    with open('.env', 'w') as f:
-        f.writelines(lines)
-
+    set_local('.env', 'DB_HOST', instance.public_dns_name)
     upload('.env', '.env')
     os.remove('.env')
 
-    # Needs beautify
-    with open('config/cli.env', 'r') as f:
-        lines = f.readlines()
-
-    for i in range(len(lines)):
-        if 'DB_HOST' in lines[i]:
-            lines[i] = 'DB_HOST=' + instance.public_dns_name + '\n'
-
-    with open('config/cli.env', 'w') as f:
-        f.writelines(lines)
+    set_local(CONFIG_FILE, 'DNS', instance.public_dns_name)
+    set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)
 
 
 def sync():
