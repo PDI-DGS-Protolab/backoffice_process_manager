@@ -22,6 +22,14 @@ def vm():
     set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)
 
 
+def install():
+    execute('''
+        sudo yum -y install mysql mysql-server
+        sudo /sbin/chkconfig mysqld on
+        sudo /sbin/service mysqld start
+        ''')
+
+
 def sync():
     execute('''
         source ~/cli.env
