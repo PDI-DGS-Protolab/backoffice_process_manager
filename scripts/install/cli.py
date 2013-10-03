@@ -40,25 +40,41 @@ def main():
 
     action = args.action
 
-    # Reading role configuration file
-    dns = get_local('config/{0}.env'.format(role), 'USER') + \
-        '@' + get_local('config/{0}.env'.format(role), 'DNS')
+    url = None
+    if action != 'help':
+        # Reading role configuration file
+        user = get_local('config/{0}.env'.format(role), 'USER')
+        dns = get_local('config/{0}.env'.format(role), 'DNS')
 
-    if not dns and action != 'vm':
-        print "Create a VM first"
-        exit(1)
+        if not user:
+            print 'USER variable not set'
+            exit(1)
 
-    # Reading cli configuration file and adding it to the process environment
-    if not check_locals('config/cli.env'):
-        exit(1)
-    load_into_os_environment('config/cli.env')
+        if not dns:
+            print 'DNS variable not set'
+            if action != 'vm':
+                print 'Create a VM first'
+            exit(1)
 
-    makeCall(role, action, dns)
+        url = get_local('config/{0}.env'.format(role), 'USER') + \
+            '@' + get_local('config/{0}.env'.format(role), 'DNS')
+
+        # Reading cli configuration file and adding it to the process
+        # environment
+        check_locals('config/cli.env')
+        load_into_os_environment('config/cli.env')
+
+    makeCall(role, action, url)
 
 
 def makeCall(role, action, dns=None):
     fabfile = importlib.import_module('fabfiles.' + role, role)
-    with settings(host_string=dns, key_filename=expanduser(environ['PEM'])):
+
+    pem = None
+    if action != 'help':
+        pem = expanduser(environ['PEM'])
+
+    with settings(host_string=dns, key_filename=pem):
         getattr(fabfile, action)()
 
 main()

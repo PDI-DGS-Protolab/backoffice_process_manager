@@ -28,7 +28,7 @@ def check_locals(filename):
 
     for l in env:
         var = l.split('=')
-        if len(var) < 2:
+        if len(var) < 2 and len(var) > 0:
             print 'The variable ' + var[0] + ' is not set'
             res = False
 

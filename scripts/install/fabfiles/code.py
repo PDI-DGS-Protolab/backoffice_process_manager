@@ -88,7 +88,8 @@ def stop():
 
 
 def help():
-    print '''ROLE:
+    print '''
+    ROLE:
         code
 
     ACTIONS:
@@ -99,4 +100,4 @@ def help():
         run             Starts the service saving the generated logs in a file
         logs            Shows the output logs generated in the ejecution of the service
         stop            Stops the service
-        '''
+    '''

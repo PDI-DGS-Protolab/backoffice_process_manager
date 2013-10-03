@@ -1,11 +1,9 @@
 import os
-from utils.awsconnector import launchInstances, download, upload
+from util.awsconnector import launchInstances, download, upload
 from fabric.api import run, local
 
 execute = run
 
-import os
-from util.awsconnector import launchInstances, download, upload
 
 CONFIG_FILE = 'config/db.env'
 
@@ -35,11 +33,12 @@ def sync():
 
 
 def help():
-    print '''ROLE:
+    print '''
+    ROLE:
         db
 
     ACTIONS:
         help            Show this message
         vm              Creates a VM in AWS and updates the .env files
         sync            Synchronize the database
-        '''
+    '''
