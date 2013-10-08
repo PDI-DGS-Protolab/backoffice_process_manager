@@ -1,5 +1,6 @@
 import os
 from util.awsconnector import launchInstances, download, upload
+from util.config_manager import get_local, set_local
 from fabric.api import run, local
 
 execute = run
@@ -9,9 +10,12 @@ CONFIG_FILE = 'config/db.env'
 
 
 def vm():
-    type = get_local(CONFIG_FILE, 'INSTANCE_TYPE')
+    ami_id = get_local(CONFIG_FILE, 'AWS_AMI_ID')
+    type = get_local(CONFIG_FILE, 'AWS_INSTANCE_TYPE')
+    sec = get_local(CONFIG_FILE, 'AWS_SECURITY_GROUP')
+
     instance = launchInstances(
-        os.environ['AWS_KEY_PAIR'], type)
+        os.environ['AWS_KEY_PAIR'], type, sec, ami_id)
 
     download('.env', '.env')
     set_local('.env', 'DB_HOST', instance.public_dns_name)
@@ -48,5 +52,6 @@ def help():
     ACTIONS:
         help            Show this message
         vm              Creates a VM in AWS and updates the .env files
+        install         Install the base dependencies for the database
         sync            Synchronize the database
     '''

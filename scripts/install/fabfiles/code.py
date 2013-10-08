@@ -58,7 +58,7 @@ def update():
 
 
 def run():
-    execute('''
+    print execute('''
     source ~/cli.env
     cd "$REPO_NAME"
     source venv/bin/activate
@@ -71,8 +71,9 @@ def run():
     ''', pty=False)
 
 
+
 def logs():
-    execute('''
+    print execute('''
     source ~/cli.env
     cd "$REPO_NAME"/"$REPO_NAME"
     tail -f out.log
@@ -80,7 +81,7 @@ def logs():
 
 
 def stop():
-    execute('''
+    print execute('''
         killall -9 foreman
         killall -9 gunicorn
         killall -9 python

@@ -50,10 +50,8 @@ def main():
             print 'USER variable not set'
             exit(1)
 
-        if not dns:
-            print 'DNS variable not set'
-            if action != 'vm':
-                print 'Create a VM first'
+        if not dns and action != 'vm':
+            print 'Create a VM first'
             exit(1)
 
         url = get_local('config/{0}.env'.format(role), 'USER') + \
