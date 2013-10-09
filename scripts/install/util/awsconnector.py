@@ -6,21 +6,14 @@ import os
 config = os.environ
 
 
+###############################################################################
+#####                           EC2 Utilities                             #####
+###############################################################################
 def connectec2():
     conn = boto.ec2.connect_to_region(
         config['AWS_REGION'],
         aws_access_key_id=config['AWS_ACCESS_KEY_ID'],
         aws_secret_access_key=config['AWS_SECRET_ACCESS_KEY'])
-
-    if not conn:
-        print('Connection error')
-    else:
-        return conn
-
-
-def connects3():
-    conn = boto.connect_s3(config['AWS_ACCESS_KEY_ID'],
-                           config['AWS_SECRET_ACCESS_KEY'])
 
     if not conn:
         print('Connection error')
@@ -76,6 +69,27 @@ def terminateInstances(instaceIds):
     conn = connectec2()
     return conn.terminate_instances(
         instance_ids=instaceIds)
+
+
+def createAMI(instanceId, name=None, description=None):
+    conn = connectec2()
+    return conn.create_image(
+        instanceId, 
+        name=name, 
+        description=description)
+
+
+###############################################################################
+#####                            S3 Utilities                             #####
+###############################################################################
+def connects3():
+    conn = boto.connect_s3(config['AWS_ACCESS_KEY_ID'],
+                           config['AWS_SECRET_ACCESS_KEY'])
+
+    if not conn:
+        print('Connection error')
+    else:
+        return conn
 
 
 def download(keyName, fileName):
