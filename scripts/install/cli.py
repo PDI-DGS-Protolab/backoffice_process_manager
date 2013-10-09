@@ -20,8 +20,10 @@ fabfilesPath = "./fabfiles"
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("role", help="Role that will perform the action")
-    parser.add_argument("action", help="Action to perform")
+    parser.add_argument(
+        "role", help="Role that will perform the action")
+    parser.add_argument(
+        "action", help="Action to perform", nargs='*')
     parser.add_argument(
         "-vm", help="Creates a virtual machine USE WITH CARE", action="store_true")
 
@@ -38,7 +40,8 @@ def main():
         print "Invalid role"
         exit(1)
 
-    action = args.action
+    action = args.action[0] # we need to separate the action from its arguments
+    arguments = args.action[1:]
 
     url = None
     if action != 'help':
@@ -54,25 +57,25 @@ def main():
             print 'Create a VM first'
             exit(1)
 
-        url = get_local('config/{0}.env'.format(role), 'USER') + \
-            '@' + get_local('config/{0}.env'.format(role), 'DNS')
-
         # Reading cli configuration file and adding it to the process
         # environment
         check_locals('config/cli.env')
         load_into_os_environment('config/cli.env')
 
-    makeCall(role, action, url)
+    makeCall(role, action, arguments, user, dns)
 
 
-def makeCall(role, action, dns=None):
+def makeCall(role, action, arguments=None, user=None, dns=None):
     fabfile = importlib.import_module('fabfiles.' + role, role)
 
     pem = None
     if action != 'help':
         pem = expanduser(environ['PEM'])
 
-    with settings(host_string=dns, key_filename=pem):
-        getattr(fabfile, action)()
+    url = user + '@' + dns
+    with settings(host_string=url, key_filename=pem):
+        getattr(fabfile, action)(*arguments)
+
+    print('Finished work at ' + dns)
 
 main()
