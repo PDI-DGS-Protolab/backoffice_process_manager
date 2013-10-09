@@ -20,6 +20,11 @@ def vm():
     set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)
 
 
+def create_ami(name=None, description=None):
+    instance_id = get_local(CONFIG_FILE, 'AWS_INSTANCE_ID')
+    ami_id = createAMI(instance_id, name, description)
+
+
 def sync():
     execute('''
         source ~/cli.env
@@ -42,14 +47,18 @@ def createDb(dbName):
 
 
 def createUser(username, password, dbName):
-    execute("""mysql -u root -p -e "CREATE USER '""" + username + """'@'localhost' IDENTIFIED BY '""" + password + """';" """)
+    execute("""mysql -u root -p -e "CREATE USER '""" + username +
+            """'@'localhost' IDENTIFIED BY '""" + password + """';" """)
 
 
 def authorize(username, hostname, dbName=None):
     if dbName:
-        execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON """ + dbName + """.* TO '""" + username + """'@'""" + hostname + """';" """)
+        execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON """ +
+                dbName + """.* TO '""" + username + """'@'""" + hostname + """';" """)
     else:
-        execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON *.* TO '""" + username + """'@'""" + hostname + """';" """)
+        execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON *.* TO '""" +
+                username + """'@'""" + hostname + """';" """)
+
 
 def help():
     print '''ROLE:
@@ -57,6 +66,9 @@ def help():
 
     ACTIONS:
         help            Show this message
+        create_ami      Creates an AMI image from the current machine. Accepts 2 optional arguments
+            name        Name for the AMI image
+            description Description of the AMI image
         vm              Creates a VM in AWS and updates the .env files
         sync            Synchronize the database
         init            Creates a database, user and grants privileges
