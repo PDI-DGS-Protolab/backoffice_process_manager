@@ -2,7 +2,7 @@ import os
 from fabric.api import run, local
 from fabric.operations import put
 
-from util.awsconnector import launchInstances
+from util.awsconnector import launchInstances, createAMI
 from util.config_manager import set_local, get_local
 
 execute = run
@@ -19,6 +19,11 @@ def vm():
 
     set_local(CONFIG_FILE, 'DNS', instance.public_dns_name)
     set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)
+
+
+def create_ami(name=None, description=None):
+    instance_id = get_local(CONFIG_FILE, 'AWS_INSTANCE_ID')
+    ami_id = createAMI(instance_id, name, description)
 
 
 def install_base():
@@ -71,7 +76,6 @@ def run():
     ''', pty=False)
 
 
-
 def logs():
     print execute('''
     source ~/cli.env
@@ -96,6 +100,9 @@ def help():
     ACTIONS:
         help            Shows this message
         vm              Creates a VM in AWS and updates the .env files
+        create_ami		Creates an AMI image from the current machine. Accepts 2 optional arguments
+        	name 		Name for the AMI image
+        	description Description of the AMI image
         clone           Clones the repository and switches to the current branch
         update          Updates the code in the current branch and the requirements if necessary
         run             Starts the service saving the generated logs in a file
