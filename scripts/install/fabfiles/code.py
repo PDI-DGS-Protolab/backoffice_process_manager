@@ -100,9 +100,9 @@ def help():
     ACTIONS:
         help            Shows this message
         vm              Creates a VM in AWS and updates the .env files
-        create_ami		Creates an AMI image from the current machine. Accepts 2 optional arguments
-        	name 		Name for the AMI image
-        	description Description of the AMI image
+        create_ami      Creates an AMI image from the current machine. Accepts 2 optional arguments
+            name        Name for the AMI image
+            description Description of the AMI image
         clone           Clones the repository and switches to the current branch
         update          Updates the code in the current branch and the requirements if necessary
         run             Starts the service saving the generated logs in a file
