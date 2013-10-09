@@ -1,12 +1,8 @@
 import os
-from utils.awsconnector import launchInstances, download, upload
+from util.awsconnector import launchInstances, download, upload
 from fabric.api import run, local
 
 execute = run
-
-import os
-from util.awsconnector import launchInstances, download, upload
-
 CONFIG_FILE = 'config/db.env'
 
 
@@ -46,14 +42,14 @@ def createDb(dbName):
 
 
 def createUser(username, password, dbName):
-    execute('mysql -u root -p -e "CREATE USER \'' + username + '\'@\'localhost\' IDENTIFIED BY \'' + password + \';"')
+    execute("""mysql -u root -p -e "CREATE USER '""" + username + """'@'localhost' IDENTIFIED BY '""" + password + """';" """)
 
 
 def authorize(username, hostname, dbName=None):
     if dbName:
-        execute('mysql -u root -p -e "GRANT ALL PRIVILEGES ON ' + dbName +'.* TO \'' + username + '\'@\'' + hostname + '\';"')
+        execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON """ + dbName + """.* TO '""" + username + """'@'""" + hostname + """';" """)
     else:
-        execute('mysql -u root -p -e "GRANT ALL PRIVILEGES ON *.* TO \'' + username + '\'@\'' + hostname + '\';"')
+        execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON *.* TO '""" + username + """'@'""" + hostname + """';" """)
 
 def help():
     print '''ROLE:
@@ -63,4 +59,8 @@ def help():
         help            Show this message
         vm              Creates a VM in AWS and updates the .env files
         sync            Synchronize the database
+        init            Creates a database, user and grants privileges
+        createDb        Creates a database
+        createUser      Creates a user
+        authorize       Authorizes a user from a host to access a database
         '''
