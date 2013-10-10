@@ -17,7 +17,7 @@ def vm():
     os.remove('.env')
 
     set_local(CONFIG_FILE, 'DNS', instance.public_dns_name)
-    set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)
+    set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)       
 
 
 def sync():
@@ -27,7 +27,7 @@ def sync():
         source venv/bin/activate
         cd "$REPO_NAME"
         ./manage.py syncdb
-        ''')
+        ''').
 
 
 def init(dbName, username, password, host="*"):
@@ -43,6 +43,7 @@ def createDb(dbName):
 
 def createUser(username, password, dbName):
     execute("""mysql -u root -p -e "CREATE USER '""" + username + """'@'localhost' IDENTIFIED BY '""" + password + """';" """)
+    authorize(username, "localhost", dbName)
 
 
 def authorize(username, hostname, dbName=None):
