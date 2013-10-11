@@ -1,6 +1,10 @@
 import os
 
 
+def config_path(role):
+    return 'config/' + role + '.env'
+
+
 def get_local(filename, property_name):
     env = _read_file(filename)
 
@@ -52,6 +56,7 @@ def load_into_os_environment(filename):
 def _read_file(filename):
     with open(filename, 'r') as f:
         return f.readlines()
+
 
 def _write_file(filename, content):
     with open(filename, 'w') as f:

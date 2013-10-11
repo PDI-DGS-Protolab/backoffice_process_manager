@@ -64,6 +64,11 @@ def main():
 
     makeCall(role, action, arguments, user, dns)
 
+    print '''
+    ---------------------
+          SUCCESS!
+    ---------------------
+        '''
 
 def makeCall(role, action, arguments=None, user=None, dns=None):
     fabfile = importlib.import_module('fabfiles.' + role, role)
@@ -76,6 +81,7 @@ def makeCall(role, action, arguments=None, user=None, dns=None):
     with settings(host_string=url, key_filename=pem):
         getattr(fabfile, action)(*arguments)
 
+    # CORRECT FOR THE CASE OF A NEW VM
     print('Finished work at ' + dns)
 
 main()

@@ -21,7 +21,7 @@ def connectec2():
         return conn
 
 
-def launchInstances(keyName, instanceType, securityGroups, ami_id):
+def launchInstances(keyName, instanceType, securityGroups, ami_id, instance_name=None):
 
     print keyName
     print instanceType
@@ -37,6 +37,10 @@ def launchInstances(keyName, instanceType, securityGroups, ami_id):
         instance_type=instanceType,
         security_groups=[securityGroups])
     instance = reservation.instances[0]
+    
+    if instance_name:
+        conn.create_tags([instance.id], {"Name": instance_name})
+    
     print('Waiting for instance to start...')
     # Check up on its status every so often
     status = instance.update()

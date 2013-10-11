@@ -1,28 +1,28 @@
 import os
-from util.awsconnector import launchInstances, download, upload
 from fabric.api import run, local
 
+
+from util.awsconnector import launchInstances, createAMI, download, upload
+from util.config_manager import set_local, get_local
+import admin
+
 execute = run
-CONFIG_FILE = 'config/db.env'
 
 
-def vm():
-    type = get_local(CONFIG_FILE, 'INSTANCE_TYPE')
-    instance = launchInstances(
-        os.environ['AWS_KEY_PAIR'], type)
+def vm(name=None):
+    instance = admin.vm(role='db', name=name)
 
     download('.env', '.env')
     set_local('.env', 'DB_HOST', instance.public_dns_name)
     upload('.env', '.env')
     os.remove('.env')
 
-    set_local(CONFIG_FILE, 'DNS', instance.public_dns_name)
-    set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)       
 
+# SACAR NOMBRE DEL FICHERO
+def dependencies():
+    put('dependencies/db.sh', '.')
 
-def create_ami(name=None, description=None):
-    instance_id = get_local(CONFIG_FILE, 'AWS_INSTANCE_ID')
-    ami_id = createAMI(instance_id, name, description)
+    execute('chmod +x ~/db.sh; ~/db.sh; rm ~/db.sh')
 
 
 def sync():
@@ -32,7 +32,7 @@ def sync():
         source venv/bin/activate
         cd "$REPO_NAME"
         ./manage.py syncdb
-        ''').
+        ''')
 
 
 def init(dbName, username, password, host="*"):
@@ -47,14 +47,14 @@ def createDb(dbName):
 
 
 def createUser(username, password, dbName):
-    execute("""mysql -u root -p -e "CREATE USER '""" + username +
+    execute("""mysql -u root -p-e "CREATE USER '""" + username +
             """'@'localhost' IDENTIFIED BY '""" + password + """';" """)
     authorize(username, "localhost", dbName)
 
 
 def authorize(username, hostname, dbName=None):
     if dbName:
-        execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON """ +
+        execute("""mysql -u root -p-e "GRANT ALL PRIVILEGES ON """ +
                 dbName + """.* TO '""" + username + """'@'""" + hostname + """';" """)
     else:
         execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON *.* TO '""" +
@@ -62,15 +62,15 @@ def authorize(username, hostname, dbName=None):
 
 
 def help():
-    print '''ROLE:
+    print '''
+    ROLE:
         db
 
     ACTIONS:
         help            Show this message
-        create_ami      Creates an AMI image from the current machine. Accepts 2 optional arguments
-            name        Name for the AMI image
-            description Description of the AMI image
-        vm              Creates a VM in AWS and updates the .env files
+        vm              Creates a VM in AWS and updates the .env files. Arguments: 1 optional
+            name        Name given to the VM
+        dependencies    Installs a dependencies script
         sync            Synchronize the database
         init            Creates a database, user and grants privileges
         createDb        Creates a database
