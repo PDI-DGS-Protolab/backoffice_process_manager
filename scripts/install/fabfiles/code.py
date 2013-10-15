@@ -10,14 +10,7 @@ execute = run
 
 
 def vm(name=None):
-    instance = admin.vm(role='code', name=name)
-
-
-# SACAR NOMBRE DEL FICHERO
-def dependencies():
-    put('dependencies/code.sh', '.')
-
-    execute('chmod +x ~/code.sh; ~/code.sh; rm ~/code.sh')
+    instance = admin.vm(name=name, role='code')
 
 
 def clone():

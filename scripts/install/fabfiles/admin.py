@@ -1,18 +1,26 @@
-import os
 from fabric.api import run, local
-
+from fabric.operations import put
 
 import util.awsconnector as aws
 from util.config_manager import set_local, get_local, config_path
 
+import os
+
 execute = run
 
+def dependencies(role):
+    put('dependencies/{0}.sh'.format(role), '.')
 
-def vm(role='admin', name=None):
+    execute('chmod +x ~/{0}.sh; ~/{0}.sh; rm ~/{0}.sh'.format(role))
+
+def vm(name, role='admin'):
     config = config_path(role)
+    type   = get_local(config, 'AWS_INSTANCE_TYPE')
+    sec    = get_local(config, 'AWS_SECURITY_GROUP')
+
     ami_id = get_local(config, 'AWS_AMI_ID')
-    type = get_local(config, 'AWS_INSTANCE_TYPE')
-    sec = get_local(config, 'AWS_SECURITY_GROUP')
+    if role == 'admin':
+        ami_id = os.environ['AWS_AMI_ID']
 
     instance = aws.launchInstances(
         os.environ['AWS_KEY_PAIR'], type, sec, ami_id, name)
@@ -23,28 +31,30 @@ def vm(role='admin', name=None):
     return instance
 
 
-def create_ami(role='admin', name=None, description=None):
-    config = config_path(role)
+def create_ami(name=None, description=None):
+    config = config_path('admin')
     instance_id = get_local(config, 'AWS_INSTANCE_ID')
     ami_id = aws.createAMI(instance_id, name, description)
 
+    set_local(config, 'AWS_AMI_ID', ami_id)
 
-def start(role):
-    config = config_path(role)
+
+def start():
+    config = config_path('admin')
     # may need fix for lists in the future
     instanceIds = [get_local(config, 'AWS_INSTANCE_ID')]
     aws.startInstances(instanceIds)
 
 
-def stop(role):
-    config = config_path(role)
+def stop():
+    config = config_path('admin')
     # may need fix for lists in the future
     instanceIds = [get_local(config, 'AWS_INSTANCE_ID')]
     aws.stopInstances(instanceIds)
 
 
-def terminate(role):
-    config = config_path(role)
+def terminate():
+    config = config_path('admin')
     # may need fix for lists in the future
     instanceIds = [get_local(config, 'AWS_INSTANCE_ID')]
     aws.terminateInstances(instanceIds)
@@ -58,17 +68,14 @@ def help():
 
     ACTIONS:
         help            Show this message
-        vm              Creates a VM in AWS and updates the .env files. Arguments: 1 positional, 1 optional
-            role        Selects the role configuration. AVOID THE USE OF ADMIN ROLE ON THIS FIELD
+        vm              Creates a VM in AWS and updates the .env files.
             name        Name given to the VM
+        dep             Install base dependencies for a given role
+            role        Selects the role configuration. AVOID THE USE OF ADMIN ROLE ON THIS FIELD
         create_ami      Creates an AMI image from the current machine. Arguments: 1 positional, 2 optional
-            role        Selects the role configuration
             name        Name for the AMI image
             description Description of the AMI image
-        start           Starts the VM. Arguments: 1 positional
-            role        Selects the role configuration
-        stop            Stops the VM. Arguments: 1 positional
-            role        Selects the role configuration        
-        terminate       Terminates the VM. Arguments: 1 positional
-            role        Selects the role configuration
+        start           Starts the VM
+        stop            Stops the VM
+        terminate       Terminates the VM
         '''
