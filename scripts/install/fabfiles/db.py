@@ -19,15 +19,15 @@ def vm(name=None):
 
 def init(dbName, username, password, host="*"):
     createDb(dbName, password)
-    createUser(username, password, dbName)
+    createUser(username, password, host, dbName)
     authorize(username, host, password, dbName)
 
 def createDb(dbName, password):
     execute('mysql -uroot --password={1} -e "CREATE DATABASE {0};" '.format(dbName, password))
 
 
-def createUser(username, password, dbName):
-    execute("""mysql -uroot --password={1} -e "CREATE USER '{0}'@'localhost' IDENTIFIED BY '{1}';" """.format(username, password))
+def createUser(username, password, host, dbName):
+    execute("""mysql -uroot --password={1} -e "CREATE USER '{0}'@'{2}' IDENTIFIED BY '{1}';" """.format(username, password, host))
 
 
 def authorize(username, hostname, password, dbName=None):
