@@ -4,32 +4,20 @@ from fabric.operations import put
 
 from util.awsconnector import launchInstances, createAMI
 from util.config_manager import set_local, get_local
+import admin
 
 execute = run
 
-CONFIG_FILE = 'config/code.env'
+
+def vm(name=None):
+    instance = admin.vm(role='code', name=name)
 
 
-def vm():
-    ami_id = get_local(CONFIG_FILE, 'AWS_AMI_ID')
-    type = get_local(CONFIG_FILE, 'AWS_INSTANCE_TYPE')
-    sec = get_local(CONFIG_FILE, 'AWS_SECURITY_GROUP')
+# SACAR NOMBRE DEL FICHERO
+def dependencies():
+    put('dependencies/code.sh', '.')
 
-    instance = launchInstances(os.environ['AWS_KEY_PAIR'], type, sec, ami_id)
-
-    set_local(CONFIG_FILE, 'DNS', instance.public_dns_name)
-    set_local(CONFIG_FILE, 'AWS_INSTANCE_ID', instance.id)
-
-
-def create_ami(name=None, description=None):
-    instance_id = get_local(CONFIG_FILE, 'AWS_INSTANCE_ID')
-    ami_id = createAMI(instance_id, name, description)
-
-
-def install_base():
-    put('dependencies/base.sh', '.')
-
-    execute('chmod +x ~/base.sh; ~/base.sh; rm ~/base.sh')
+    execute('chmod +x ~/code.sh; ~/code.sh; rm ~/code.sh')
 
 
 def clone():
@@ -55,7 +43,6 @@ def update():
 
         cd "$REPO_NAME"
         git pull origin $BRANCH
-        sh ./scripts/install/dependencies/code.sh
         pip install -r requirements.txt
         wget --output-document .env $AWS_URL
         python manage.py collectstatic --noinput
@@ -99,10 +86,9 @@ def help():
 
     ACTIONS:
         help            Shows this message
-        vm              Creates a VM in AWS and updates the .env files
-        create_ami      Creates an AMI image from the current machine. Accepts 2 optional arguments
-            name        Name for the AMI image
-            description Description of the AMI image
+        vm              Creates a VM in AWS and updates the .env files. Arguments: 1 optional
+            name        Name given to the VM
+        dependencies    Installs a dependencies script
         clone           Clones the repository and switches to the current branch
         update          Updates the code in the current branch and the requirements if necessary
         run             Starts the service saving the generated logs in a file

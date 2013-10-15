@@ -2,5 +2,5 @@
 
 sudo yum -y install make glibc-devel gcc gcc-c++ openssl-devel libxml2 libxml2-devel python27-devel mysql-devel mysql httpd
 
-chkconfig httpd on
-/etc/init.d/httpd start
+sudo chkconfig httpd on
+sudo /etc/init.d/httpd start
