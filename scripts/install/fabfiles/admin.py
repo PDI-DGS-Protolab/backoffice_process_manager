@@ -8,7 +8,7 @@ from util.config_manager import set_local, get_local, config_path
 execute = run
 
 
-def vm(role, name=None):
+def vm(role='admin', name=None):
     config = config_path(role)
     ami_id = get_local(config, 'AWS_AMI_ID')
     type = get_local(config, 'AWS_INSTANCE_TYPE')
@@ -23,7 +23,7 @@ def vm(role, name=None):
     return instance
 
 
-def create_ami(role, name=None, description=None):
+def create_ami(role='admin', name=None, description=None):
     config = config_path(role)
     instance_id = get_local(config, 'AWS_INSTANCE_ID')
     ami_id = aws.createAMI(instance_id, name, description)
