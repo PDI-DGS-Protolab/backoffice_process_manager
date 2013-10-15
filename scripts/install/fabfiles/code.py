@@ -49,7 +49,7 @@ def sync():
         cd "$REPO_NAME"
         wget --output-document .env $AWS_URL
         source .env
-        ./manage.py syncdb
+        ./manage.py syncdb --noinput
         ''')
 
 def run():
