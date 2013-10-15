@@ -45,6 +45,6 @@ nosetests.xml
 celerybeat-schedule
 
 # Environment variables
-*.env
+.env
 
 static_cache
