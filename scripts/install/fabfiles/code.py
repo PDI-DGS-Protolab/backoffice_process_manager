@@ -41,6 +41,16 @@ def update():
         python manage.py collectstatic --noinput
         ''')
 
+def sync():
+    execute('''
+        source ~/cli.env
+        cd "$REPO_NAME"
+        source venv/bin/activate
+        cd "$REPO_NAME"
+        wget --output-document .env $AWS_URL
+        source .env
+        ./manage.py syncdb
+        ''')
 
 def run():
     print execute('''
