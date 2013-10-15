@@ -24,9 +24,7 @@ def main():
         "role", help="Role that will perform the action")
     parser.add_argument(
         "action", help="Action to perform", nargs='*')
-    parser.add_argument(
-        "-vm", help="Creates a virtual machine USE WITH CARE", action="store_true")
-
+ 
     args = parser.parse_args()
 
     fabfiles = [f for f in listdir(fabfilesPath) if re.match(r'^.+\.py$', f)]
@@ -57,6 +55,9 @@ def main():
             print 'Create a VM first'
             exit(1)
 
+        if not dns:
+            dns = ""
+
         # Reading cli configuration file and adding it to the process
         # environment
         check_locals('config/cli.env')
@@ -70,7 +71,7 @@ def main():
     ---------------------
         '''
 
-def makeCall(role, action, arguments=None, user=None, dns=None):
+def makeCall(role, action, arguments=None, user=None, dns=''):
     fabfile = importlib.import_module('fabfiles.' + role, role)
 
     pem = None
