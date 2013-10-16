@@ -62,6 +62,9 @@ def main():
         # environment
         check_locals('config/cli.env')
         load_into_os_environment('config/cli.env')
+    else:
+        user = ""
+        dns  = ""
 
     makeCall(role, action, arguments, user, dns)
 
