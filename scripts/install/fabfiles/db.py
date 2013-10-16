@@ -17,6 +17,11 @@ def vm(name=None):
     upload('.env', '.env')
     os.remove('.env')
 
+
+def export(name=None, description=None):
+    admin.export(name, description)
+
+
 def init(dbName, username, password, host="%"):
     createDb(dbName, password)
     createUser(username, password)
@@ -45,12 +50,15 @@ def help():
         db
 
     ACTIONS:
-        help            Show this message
-        vm              Creates a VM in AWS and updates the .env files. Arguments: 1 optional
-            name        Name given to the VM
-        ssh             Opens remote shell against the VM
-        init            Creates a database, user and grants privileges
-        createDb        Creates a database
-        createUser      Creates a user
-        authorize       Authorizes a user from a host to access a database
+        help              Show this message
+        vm                Creates a VM in AWS and updates the .env files. Arguments: 1 optional
+            name          Name given to the VM
+        ssh               Opens remote shell against the VM
+        init              Creates a database, user and grants privileges
+        createDb          Creates a database
+        createUser        Creates a user
+        authorize         Authorizes a user from a host to access a database
+        export            Creates an AMI image from the current machine
+            name          Name for the AMI image
+            description   Description of the AMI image
         '''

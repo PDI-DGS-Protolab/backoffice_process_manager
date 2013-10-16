@@ -13,6 +13,10 @@ def vm(name=None):
     instance = admin.vm(name=name, role='code')
 
 
+def export(name=None, description=None):
+    admin.export(name, description)
+
+
 def ssh():
     #TODO: Code opening console
     pass
@@ -93,14 +97,17 @@ def help():
         code
 
     ACTIONS:
-        help            Shows this message
-        vm              Creates a VM in AWS and updates the .env files
-            name        Name given to the VM
-        ssh             Opens remote shell against the VM
-        clone           Clones the repository and switches to the current branch
-        update          Updates the code in the current branch and the requirements if necessary
-        syncdb          Create database model
-        run             Starts the service saving the generated logs in a file
-        logs            Shows the output logs generated in the ejecution of the service
-        stop            Stops the service
+        help              Shows this message
+        vm                Creates a VM in AWS and updates the .env files
+            name          Name given to the VM
+        ssh               Opens remote shell against the VM
+        clone             Clones the repository and switches to the current branch
+        update            Updates the code in the current branch and the requirements if necessary
+        syncdb            Create database model
+        run               Starts the service saving the generated logs in a file
+        logs              Shows the output logs generated in the ejecution of the service
+        stop              Stops the service
+        export            Creates an AMI image from the current machine
+            name          Name for the AMI image
+            description   Description of the AMI image
     '''
