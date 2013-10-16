@@ -13,17 +13,21 @@ def dependencies(role):
 
     execute('chmod +x ~/{0}.sh; ~/{0}.sh; rm ~/{0}.sh'.format(role))
 
-def vm(name, role='admin'):
-    config = config_path(role)
-    type   = get_local(config, 'AWS_INSTANCE_TYPE')
-    sec    = get_local(config, 'AWS_SECURITY_GROUP')
+def vm(name=None, role='admin'):
+    if not name:
+        print "Required name for machine!"
+        exit(1)
+
+    config  = config_path(role)
+    vm_type = get_local(config, 'AWS_INSTANCE_TYPE')
+    sec     = get_local(config, 'AWS_SECURITY_GROUP')
 
     ami_id = get_local(config, 'AWS_AMI_ID')
     if role == 'admin':
         ami_id = os.environ['AWS_AMI_ID']
 
     instance = aws.launchInstances(
-        os.environ['AWS_KEY_PAIR'], type, sec, ami_id, name)
+        os.environ['AWS_KEY_PAIR'], vm_type, sec, ami_id, name)
 
     set_local(config, 'DNS', instance.public_dns_name)
     set_local(config, 'AWS_INSTANCE_ID', instance.id)
@@ -31,7 +35,20 @@ def vm(name, role='admin'):
     return instance
 
 
-def create_ami(name=None, description=None):
+def ssh():
+    #TODO: Code opening console
+    pass
+
+
+def export(name=None, description=None):
+    if not name:
+        print "Required name for AMI!"
+        exit(1)
+
+    if not description:
+        print "Required description for AMI!"
+        exit(1)
+
     config = config_path('admin')
     instance_id = get_local(config, 'AWS_INSTANCE_ID')
     ami_id = aws.createAMI(instance_id, name, description)
@@ -67,15 +84,16 @@ def help():
         admin
 
     ACTIONS:
-        help            Show this message
-        vm              Creates a VM in AWS and updates the .env files.
-            name        Name given to the VM
-        dependencies    Install base dependencies for a given role
-            role        Selects the role configuration. AVOID THE USE OF ADMIN ROLE ON THIS FIELD
-        create_ami      Creates an AMI image from the current machine. Arguments: 1 positional, 2 optional
-            name        Name for the AMI image
-            description Description of the AMI image
-        start           Starts the VM
-        stop            Stops the VM
-        terminate       Terminates the VM
+        help              Show this message
+        vm                Creates a VM in AWS and updates the .env files
+            name          Name given to the VM
+        ssh               Opens remote shell against the VM
+        dependencies      Install base dependencies for a given VM role
+            role          Selects the role configuration.
+        export            Creates an AMI image from the current machine
+            name          Name for the AMI image
+            description   Description of the AMI image
+        start             Starts the VM
+        stop              Stops the VM
+        terminate         Terminates the VM
         '''

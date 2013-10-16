@@ -13,6 +13,11 @@ def vm(name=None):
     instance = admin.vm(name=name, role='code')
 
 
+def ssh():
+    #TODO: Code opening console
+    pass
+
+
 def clone():
     put('config/cli.env', '.')
 
@@ -41,7 +46,7 @@ def update():
         python manage.py collectstatic --noinput
         ''')
 
-def sync():
+def syncdb():
     execute('''
         source ~/cli.env
         cd "$REPO_NAME"
@@ -89,10 +94,12 @@ def help():
 
     ACTIONS:
         help            Shows this message
-        vm              Creates a VM in AWS and updates the .env files. Arguments: 1 optional
+        vm              Creates a VM in AWS and updates the .env files
             name        Name given to the VM
+        ssh             Opens remote shell against the VM
         clone           Clones the repository and switches to the current branch
         update          Updates the code in the current branch and the requirements if necessary
+        syncdb          Create database model
         run             Starts the service saving the generated logs in a file
         logs            Shows the output logs generated in the ejecution of the service
         stop            Stops the service

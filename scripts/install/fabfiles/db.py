@@ -48,7 +48,7 @@ def help():
         help            Show this message
         vm              Creates a VM in AWS and updates the .env files. Arguments: 1 optional
             name        Name given to the VM
-        sync            Synchronize the database
+        ssh             Opens remote shell against the VM
         init            Creates a database, user and grants privileges
         createDb        Creates a database
         createUser      Creates a user
