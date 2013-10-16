@@ -70,7 +70,7 @@ def help():
         help            Show this message
         vm              Creates a VM in AWS and updates the .env files.
             name        Name given to the VM
-        dep             Install base dependencies for a given role
+        dependencies    Install base dependencies for a given role
             role        Selects the role configuration. AVOID THE USE OF ADMIN ROLE ON THIS FIELD
         create_ami      Creates an AMI image from the current machine. Arguments: 1 positional, 2 optional
             name        Name for the AMI image

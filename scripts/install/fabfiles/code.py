@@ -91,7 +91,6 @@ def help():
         help            Shows this message
         vm              Creates a VM in AWS and updates the .env files. Arguments: 1 optional
             name        Name given to the VM
-        dependencies    Installs a dependencies script
         clone           Clones the repository and switches to the current branch
         update          Updates the code in the current branch and the requirements if necessary
         run             Starts the service saving the generated logs in a file
