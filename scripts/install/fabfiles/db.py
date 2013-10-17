@@ -3,11 +3,10 @@ from fabric.api import run, local
 
 
 from util.awsconnector import launchInstances, createAMI, download, upload
-from util.config_manager import set_local, get_local
+from util.config_manager import set_local, get_local, config_path
 import admin
 
 execute = run
-config =os.environ
 
 def vm(name=None):
     instance = admin.vm(name=name, role='db')
@@ -23,9 +22,12 @@ def export(name=None, description=None):
 
 
 def init(host):
-    username = config['DB_USER']
-    password = config['DB_PASS']
-    dbName = config['DB_NAME']
+
+    config = config_path('admin')
+
+    username = get_local(config, 'DB_USER')
+    password = get_local(config, 'DB_PASS')
+    dbName = get_local(config, 'DB_NAME')
     createDb(dbName, password)
     createUser(username, password)
     authorize(username, host, password, dbName)
