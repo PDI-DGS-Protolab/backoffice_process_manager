@@ -10,14 +10,16 @@ execute = run
 
 
 def vm(name=None):
-    instance = admin.vm(role='code', name=name)
+    instance = admin.vm(name=name, role='code')
 
 
-# SACAR NOMBRE DEL FICHERO
-def dependencies():
-    put('dependencies/code.sh', '.')
+def export(name=None, description=None):
+    admin.export(name, description)
 
-    execute('chmod +x ~/code.sh; ~/code.sh; rm ~/code.sh')
+
+def ssh():
+    #TODO: Code opening console
+    pass
 
 
 def clone():
@@ -48,6 +50,16 @@ def update():
         python manage.py collectstatic --noinput
         ''')
 
+def syncdb():
+    execute('''
+        source ~/cli.env
+        cd "$REPO_NAME"
+        source venv/bin/activate
+        cd "$REPO_NAME"
+        wget --output-document .env $AWS_URL
+        source .env
+        ./manage.py syncdb --noinput
+        ''')
 
 def run():
     print execute('''
@@ -85,13 +97,17 @@ def help():
         code
 
     ACTIONS:
-        help            Shows this message
-        vm              Creates a VM in AWS and updates the .env files. Arguments: 1 optional
-            name        Name given to the VM
-        dependencies    Installs a dependencies script
-        clone           Clones the repository and switches to the current branch
-        update          Updates the code in the current branch and the requirements if necessary
-        run             Starts the service saving the generated logs in a file
-        logs            Shows the output logs generated in the ejecution of the service
-        stop            Stops the service
+        help              Shows this message
+        vm                Creates a VM in AWS and updates the .env files
+            name          Name given to the VM
+        ssh               Opens remote shell against the VM
+        clone             Clones the repository and switches to the current branch
+        update            Updates the code in the current branch and the requirements if necessary
+        syncdb            Create database model
+        run               Starts the service saving the generated logs in a file
+        logs              Shows the output logs generated in the ejecution of the service
+        stop              Stops the service
+        export            Creates an AMI image from the current machine
+            name          Name for the AMI image
+            description   Description of the AMI image
     '''

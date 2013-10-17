@@ -10,7 +10,7 @@ execute = run
 
 
 def vm(name=None):
-    instance = admin.vm(role='db', name=name)
+    instance = admin.vm(name=name, role='db')
 
     download('.env', '.env')
     set_local('.env', 'DB_HOST', instance.public_dns_name)
@@ -18,47 +18,30 @@ def vm(name=None):
     os.remove('.env')
 
 
-# SACAR NOMBRE DEL FICHERO
-def dependencies():
-    put('dependencies/db.sh', '.')
-
-    execute('chmod +x ~/db.sh; ~/db.sh; rm ~/db.sh')
+def export(name=None, description=None):
+    admin.export(name, description)
 
 
-def sync():
-    execute('''
-        source ~/cli.env
-        cd "$REPO_NAME"
-        source venv/bin/activate
-        cd "$REPO_NAME"
-        ./manage.py syncdb
-        ''')
+def init(dbName, username, password, host="%"):
+    createDb(dbName, password)
+    createUser(username, password)
+    authorize(username, host, password, dbName)
+
+def createDb(dbName, password):
+    execute('mysql -uroot --password={1} -e "CREATE DATABASE {0};" '.format(dbName, password))
 
 
-def init(dbName, username, password, host="*"):
-
-    createDb(dbName)
-    createUser(username, password, dbName)
-    authorize(username, host, dbName)
+def createUser(username, password):
+    execute("""mysql -uroot --password={1} -e "CREATE USER '{0}' IDENTIFIED BY '{1}';" """.format(username, password))
 
 
-def createDb(dbName):
-    execute('mysql -u root -p -e "CREATE DATABASE ' + dbName + '"')
-
-
-def createUser(username, password, dbName):
-    execute("""mysql -u root -p-e "CREATE USER '""" + username +
-            """'@'localhost' IDENTIFIED BY '""" + password + """';" """)
-    authorize(username, "localhost", dbName)
-
-
-def authorize(username, hostname, dbName=None):
+def authorize(username, hostname, password, dbName=None):
     if dbName:
-        execute("""mysql -u root -p-e "GRANT ALL PRIVILEGES ON """ +
-                dbName + """.* TO '""" + username + """'@'""" + hostname + """';" """)
+        execute("""mysql -u root --password={3} -e "GRANT ALL PRIVILEGES ON {0}.* TO '{1}'@'{2}';" """.format(
+            dbName, username, hostname, password))
     else:
-        execute("""mysql -u root -p -e "GRANT ALL PRIVILEGES ON *.* TO '""" +
-                username + """'@'""" + hostname + """';" """)
+        execute("""mysql -u root --password={2} -e "GRANT ALL PRIVILEGES ON *.* TO '{0}'@'{1}';" """.format(
+            username, hostname, password))
 
 
 def help():
@@ -67,13 +50,15 @@ def help():
         db
 
     ACTIONS:
-        help            Show this message
-        vm              Creates a VM in AWS and updates the .env files. Arguments: 1 optional
-            name        Name given to the VM
-        dependencies    Installs a dependencies script
-        sync            Synchronize the database
-        init            Creates a database, user and grants privileges
-        createDb        Creates a database
-        createUser      Creates a user
-        authorize       Authorizes a user from a host to access a database
+        help              Show this message
+        vm                Creates a VM in AWS and updates the .env files. Arguments: 1 optional
+            name          Name given to the VM
+        ssh               Opens remote shell against the VM
+        init              Creates a database, user and grants privileges
+        createDb          Creates a database
+        createUser        Creates a user
+        authorize         Authorizes a user from a host to access a database
+        export            Creates an AMI image from the current machine
+            name          Name for the AMI image
+            description   Description of the AMI image
         '''
