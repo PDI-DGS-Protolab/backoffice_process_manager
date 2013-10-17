@@ -7,7 +7,7 @@ from util.config_manager import set_local, get_local
 import admin
 
 execute = run
-
+config =os.environ
 
 def vm(name=None):
     instance = admin.vm(name=name, role='db')
@@ -22,7 +22,10 @@ def export(name=None, description=None):
     admin.export(name, description)
 
 
-def init(dbName, username, password, host="%"):
+def init(host):
+    username = config['DB_USER']
+    password = config['DB_PASS']
+    dbName = config['DB_NAME']
     createDb(dbName, password)
     createUser(username, password)
     authorize(username, host, password, dbName)
